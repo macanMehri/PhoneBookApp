@@ -1,1 +1,3 @@
 local_settings.py
+__pycache__/
+phone_book_venv/
