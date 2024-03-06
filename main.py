@@ -149,11 +149,62 @@ def add_new_address():
     return new_address
 
 
+def update_phonebook_info(phonebook_id):
+    '''Update phonebook information'''
+    while True:
+        print('1. Person info.\n'
+              '2. Note.\n'
+              '0. Exit changing.'
+        )
+        order = int(input('What do you want to change? '))
+        match order:
+            case 0:
+                break
+            case 1:
+                person_id = PhoneBook.select(PhoneBook.person.id).where(PhoneBook.id==phonebook_id)
+                update_persons_info(person_id=person_id)
+            case 2:
+                new_note = input('Please enter new note: ')
+                phonebook = PhoneBook.update(note=new_note).where(PhoneBook.id==phonebook_id)
+                phonebook.execute()
+
+
+def update_address_info(address_id):
+    '''Update an address information'''
+    while True:
+        print('1. Provice.\n'
+              '2. City.\n'
+              '3. Street.\n'
+              '4. House name.\n'
+              '0. Exit changing.'
+        )
+        order = int(input('What do you want to change? '))
+        match order:
+            case 0:
+                break
+            case 1:
+                new_provice = input('Please enter new provice: ')
+                address = Address.update(provice=new_provice).where(Address.id==address_id)
+                address.execute()
+            case 2:
+                new_city = input('Please enter new city: ')
+                address = Address.update(city=new_city).where(Address.id==address_id)
+                address.execute()
+            case 3:
+                new_street = input('Please enter new street: ')
+                address = Address.update(street=new_street).where(Address.id==address_id)
+                address.execute()
+            case 4:
+                new_house_name = input('Please enter new house name: ')
+                address = Address.update(house_name=new_house_name).where(Address.id==address_id)
+                address.execute()
+
+
 def update_persons_info(person_id):
     '''Update a persons information'''
 
     while True:
-        print('1. First name\n'
+        print('1. First name.\n'
               '2. Last name.\n'
               '3. Number.\n'
               '4. Address.\n'
@@ -218,6 +269,22 @@ def delete_person(person_id):
         person.execute()
     except peewee.IntegrityError as error:
         print('You cannot delete this person.')
+        print('IntegrityError:', error)
+
+
+def delete_phonebook(phonebook_id):
+    '''Delete an object from phonebook table'''
+    phonebook = PhoneBook.delete().where(PhoneBook.id==phonebook_id)
+    phonebook.execute()
+
+
+def delete_address(address_id):
+    '''Delete an object from address table'''
+    try:
+        address = Address.delete().where(Address.id==address_id)
+        address.execute()
+    except peewee.IntegrityError as error:
+        print('You cannot delete this address.')
         print('IntegrityError:', error)
 
 
@@ -316,16 +383,20 @@ if __name__ == '__main__':
 3. Add new person to phonebook.
 4. Add existed person to phonebook.
 5. Change a persons info.
-6. Delete a person from phonebook.
-7. Create random addresses.
-8. Create random people.
-9. Add random people to phonebook.
+6. Delete a person from human table.
+7. Delete from phonebook.
+8. Change phonebook info.
+9. Change address info.
+10. Delete an address from address table.
+11. Create random addresses.
+12. Create random people.
+13. Add random people to phonebook.
 '''
         while True:
             print(MENU)
             while True:
                 order = int(input('Please enter your order: '))
-                if 0 <= order < 7:
+                if 0 <= order < 11:
                     break
                 print('You enter wrong number! Please try again.')
             match order:
@@ -347,12 +418,24 @@ if __name__ == '__main__':
                     person_id = int(input('Please enter an id: '))
                     delete_person(person_id=person_id)
                 case 7:
+                    phonebook_id = int(input('Please enter an id: '))
+                    delete_phonebook(phonebook_id=phonebook_id)
+                case 8:
+                    phonebook_id = int(input('Please enter an id: '))
+                    update_phonebook_info(phonebook_id=phonebook_id)
+                case 9:
+                    address_id = int(input('Please enter an id: '))
+                    update_address_info(address_id=address_id)
+                case 10:
+                    address_id = int(input('Please enter an id: '))
+                    delete_address(address_id=address_id)
+                case 11:
                     create_random_addresses()
                     print('Random addresses created.')
-                case 8:
+                case 12:
                     create_random_people()
                     print('Random people created.')
-                case 9:
+                case 13:
                     create_random_phone_book()
                     print('Random people added to phonebook.')
 
