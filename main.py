@@ -86,7 +86,7 @@ def add_new_person():
         print('This number is not allowed! Please try again.')
     while True:
         order = input(
-            'Do you want to use an existed address or you want to add new address?(Y/N): '
+            'Do you want to use an existed address?(Y/N): '
         )
         if order == 'Y' or order == 'N':
             break
@@ -97,14 +97,121 @@ def add_new_person():
                 address_id = int(input('Please enter an address id: '))
             except ValueError as error:
                 print('ValueError:', error)
+            except peewee.IntegrityError as error:
+                print('IntegrityError:', error)
             else:
                 break
-    Human.create(
+    else:
+        address_id = add_new_address()
+
+    new_person = Human.create(
         first_name=first_name,
         last_name=last_name,
         number=number,
         address=address_id
     )
+    return new_person
+
+
+def add_new_to_phone_book(person_id=None):
+    '''Create and add new person to phone book'''
+    if not person_id:
+        person_id = add_new_person()
+    note = input('If you want to add note, type here: ')
+    PhoneBook.create(
+        person=person_id,
+        note=note
+    )
+
+
+
+def add_new_address():
+    '''Create an address with user inputs'''  
+    while True:
+        provice = input('Please enter your provice: ').capitalize()
+        if not provice.isnumeric() and len(provice) > 3:
+            break
+        print('This provice name is not allowed! Please try again.').capitalize()
+    while True:
+        city = input('Please enter your city: ').capitalize()
+        if not city.isnumeric() and len(city) > 3:
+            break
+        print('This city name is not allowed! Please try again.')
+    street = input('Please enter your street: ').capitalize()
+    house_name = input('Please enter your house name: ').capitalize()
+
+    new_address = Address.create(
+        city=city,
+        provice=provice,
+        street=street,
+        house_name=house_name
+    )
+    return new_address
+
+
+def update_persons_info(person_id):
+    '''Update a persons information'''
+
+    while True:
+        print('1. First name\n'
+              '2. Last name.\n'
+              '3. Number.\n'
+              '4. Address.\n'
+              '0. Exit changing.'
+        )
+        order = int(input('What do you want to change? '))
+        match order:
+            case 0:
+                break
+            case 1:
+                while True:
+                    new_name = input('Please enter new name: ').capitalize()
+                    if not new_name.isnumeric() and len(new_name) > 3:
+                        break
+                    print('This name is not allowed! Please try again.')
+                person = Human.update(first_name=new_name).where(Human.id==person_id)
+                person.execute()
+            case 2:
+                while True:
+                    new_last_name = input('Please enter new last name: ').capitalize()
+                    if not new_last_name.isnumeric() and len(new_last_name) > 3:
+                        break
+                    print('This last name is not allowed! Please try again.')
+                person = Human.update(last_name=new_last_name).where(Human.id==person_id)
+                person.execute()
+            case 3:
+                while True:
+                    new_number = input('Please enter new number: ')
+                    if new_number.isnumeric() and len(new_number) > 3:
+                        break
+                    print('This number is not allowed! Please try again.')
+                person = Human.update(number=new_number).where(Human.id==person_id)
+                person.execute()
+            case 4:
+                while True:
+                    order = input(
+                        'Do you want to use an existed address?(Y/N): '
+                    )
+                    if order == 'Y' or order == 'N':
+                        break
+                    print('I cannot understand! Please try again.')
+                if order == 'Y':
+                    while True:
+                        try:
+                            new_address = int(input('Please enter an address id: '))
+                        except ValueError as error:
+                            print('ValueError:', error)
+                        except peewee.IntegrityError as error:
+                            print('IntegrityError:', error)
+                        else:
+                            break
+                else:
+                    new_address = add_new_address()
+                person = Human.update(address=new_address).where(Human.id==person_id)
+                person.execute()
+
+
+
 
 
 # Connect to database useing database_manager
@@ -190,13 +297,10 @@ class PhoneBook(peewee.Model):
 
 if __name__ == '__main__':
     try:
+        # Create tables
         database_manager.create_tables(
             [Human, Address, PhoneBook]
         )
-        # Created some random datas to make sure it is working correctly
-        # create_random_addresses()
-        # create_random_people()
-        # create_random_phone_book()
 
         MENU = '''
 0. Exit.
@@ -206,6 +310,9 @@ if __name__ == '__main__':
 4. Add existed person to phonebook.
 5. Change a persons info.
 6. Delete a person from phonebook.
+7. Create random addresses.
+8. Create random people.
+9. Add random people to phonebook.
 '''
         while True:
             print(MENU)
@@ -217,8 +324,27 @@ if __name__ == '__main__':
             match order:
                 case 0:
                     break
+                case 1:
+                    add_new_address()
                 case 2:
                     add_new_person()
+                case 3:
+                    add_new_to_phone_book()
+                case 4:
+                    person_id = int(input('Please enter an id: '))
+                    add_new_to_phone_book(person_id=person_id)
+                case 5:
+                    person_id = int(input('Please enter an id: '))
+                    update_persons_info(person_id=person_id)
+                case 7:
+                    create_random_addresses()
+                    print('Random addresses created.')
+                case 8:
+                    create_random_people()
+                    print('Random people created.')
+                case 9:
+                    create_random_phone_book()
+                    print('Random people added to phonebook.')
 
     except ValueError as error:
         print('ValueError:', error)
