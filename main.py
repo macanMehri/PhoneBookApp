@@ -13,7 +13,7 @@ database_manager = DatabaseManager(
 
 
 class Address(peewee.Model):
-    '''Address object'''
+    '''An address object'''
 
     city = peewee.CharField(
         max_length=20,
@@ -68,6 +68,22 @@ class Human(peewee.Model):
         model=Address,
         null=False,
         verbos_name='Address'
+    )
+
+    class Meta:
+        database = database_manager.db
+
+
+class PhoneBook(peewee.Model):
+    '''A phonebook object'''
+    person = peewee.ForeignKeyField(
+        model=Human,
+        null=False,
+        verbos_name='Person'
+        )
+    note = peewee.TextField(
+        null=True,
+        verbose_name='Note'
     )
 
     class Meta:
