@@ -3,6 +3,10 @@ from database_manager import DatabaseManager
 from local_settings import DATABASE
 import numpy as np
 import random
+import logging
+
+
+logging.basicConfig(filename='Logs.log')
 
 
 first_names = np.array(
@@ -97,8 +101,10 @@ def add_new_person():
                 address_id = int(input('Please enter an address id: '))
             except ValueError as error:
                 print('ValueError:', error)
+                logging.error(error)
             except peewee.IntegrityError as error:
                 print('IntegrityError:', error)
+                logging.error(error)
             else:
                 break
     else:
@@ -253,8 +259,10 @@ def update_persons_info(person_id):
                             new_address = int(input('Please enter an address id: '))
                         except ValueError as error:
                             print('ValueError:', error)
+                            logging.error(error)
                         except peewee.IntegrityError as error:
                             print('IntegrityError:', error)
+                            logging.error(error)
                         else:
                             break
                 else:
@@ -271,6 +279,7 @@ def delete_person(person_id):
     except peewee.IntegrityError as error:
         print('You cannot delete this person.')
         print('IntegrityError:', error)
+        logging.error(error)
 
 
 def delete_phonebook(phonebook_id):
@@ -287,6 +296,7 @@ def delete_address(address_id):
     except peewee.IntegrityError as error:
         print('You cannot delete this address.')
         print('IntegrityError:', error)
+        logging.error(error)
 
 
 def show_all_humans() -> None:
@@ -495,6 +505,10 @@ if __name__ == '__main__':
 
     except ValueError as error:
         print('ValueError:', error)
+        logging.error(error)
+    except Exception as error:
+        print('ValueError:', error)
+        logging.error(error)
     finally:
         # Closing database connection.
         if database_manager.db:
