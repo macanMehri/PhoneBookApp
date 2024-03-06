@@ -146,6 +146,7 @@ def add_new_address():
         street=street,
         house_name=house_name
     )
+    print(new_address)
     return new_address
 
 
@@ -288,6 +289,30 @@ def delete_address(address_id):
         print('IntegrityError:', error)
 
 
+def show_all_humans() -> None:
+    '''Show all objects from human table'''
+    people = Human.select()
+    for person in people:
+        print(person)
+        print('-'*20)
+
+
+def show_all_data() -> None:
+    '''Show all datas from phonebook table'''
+    datas = PhoneBook.select()
+    for data in datas:
+        print(data)
+        print('-'*20)
+
+
+def show_all_addresses() -> None:
+    '''Show all objects from address table'''
+    addresses = Address.select()
+    for address in addresses:
+        print(address)
+        print('-'*20)
+
+
 # Connect to database useing database_manager
 database_manager = DatabaseManager(
     database_name=DATABASE['name'],
@@ -296,7 +321,6 @@ database_manager = DatabaseManager(
     host=DATABASE['host'],
     port=DATABASE['port']
 )
-
 
 class Address(peewee.Model):
     '''An address object'''
@@ -320,6 +344,11 @@ class Address(peewee.Model):
         null=False,
         verbose_name='House Name'
     )
+    def __str__(self) -> str:
+        return (
+            f'Address ID: {self.id}\n'
+            f'{self.provice}-{self.city}-Street:{self.street}-Name:{self.house_name}'
+        )
 
     class Meta:
         database = database_manager.db
@@ -349,6 +378,19 @@ class Human(peewee.Model):
         verbose_name='Address'
     )
 
+    @property
+    def full_name(self) -> str:
+        '''Create fullname using firsname and lastname'''
+        return f'{self.first_name} {self.last_name}'
+
+    def __str__(self) -> str:
+        return (
+            f'Person ID: {self.id}\n'
+            f'Name: {self.full_name}\n'
+            f'Number: {self.number}\n'
+            f'Address:\n{self.address}'
+        )
+
     class Meta:
         database = database_manager.db
 
@@ -364,6 +406,9 @@ class PhoneBook(peewee.Model):
         null=True,
         verbose_name='Note'
     )
+
+    def __str__(self) -> str:
+        return f'ID: {self.id}\n{self.person}\nNote: {self.note}'
 
     class Meta:
         database = database_manager.db
@@ -391,12 +436,15 @@ if __name__ == '__main__':
 11. Create random addresses.
 12. Create random people.
 13. Add random people to phonebook.
+14. Show all people.
+15. Show all addresses.
+16. Show all datas from phonebook.
 '''
         while True:
             print(MENU)
             while True:
                 order = int(input('Please enter your order: '))
-                if 0 <= order < 11:
+                if 0 <= order < 20:
                     break
                 print('You enter wrong number! Please try again.')
             match order:
@@ -438,6 +486,12 @@ if __name__ == '__main__':
                 case 13:
                     create_random_phone_book()
                     print('Random people added to phonebook.')
+                case 14:
+                    show_all_humans()
+                case 15:
+                    show_all_addresses()
+                case 16:
+                    show_all_data()
 
     except ValueError as error:
         print('ValueError:', error)
