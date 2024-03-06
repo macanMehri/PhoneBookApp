@@ -211,7 +211,14 @@ def update_persons_info(person_id):
                 person.execute()
 
 
-
+def delete_person(person_id):
+    '''Delete a person from database'''
+    try:
+        person = Human.delete().where(Human.id == person_id)
+        person.execute()
+    except peewee.IntegrityError as error:
+        print('You cannot delete this person.')
+        print('IntegrityError:', error)
 
 
 # Connect to database useing database_manager
@@ -336,6 +343,9 @@ if __name__ == '__main__':
                 case 5:
                     person_id = int(input('Please enter an id: '))
                     update_persons_info(person_id=person_id)
+                case 6:
+                    person_id = int(input('Please enter an id: '))
+                    delete_person(person_id=person_id)
                 case 7:
                     create_random_addresses()
                     print('Random addresses created.')
