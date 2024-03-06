@@ -67,6 +67,46 @@ def create_random_phone_book():
         )
 
 
+def add_new_person():
+    '''Create a person with user inputs'''
+    while True:
+        first_name = input('Please enter your name: ').capitalize()
+        if not first_name.isnumeric() and len(first_name) > 3:
+            break
+        print('This name is not allowed! Please try again.')
+    while True:
+        last_name = input('Please enter your last name: ').capitalize()
+        if not last_name.isnumeric() and len(last_name) > 3:
+            break
+        print('This last name is not allowed! Please try again.')
+    while True:
+        number = input('Please enter your number: ')
+        if number.isnumeric() and len(number) > 3:
+            break
+        print('This number is not allowed! Please try again.')
+    while True:
+        order = input(
+            'Do you want to use an existed address or you want to add new address?(Y/N): '
+        )
+        if order == 'Y' or order == 'N':
+            break
+        print('I cannot understand! Please try again.')
+    if order == 'Y':
+        while True:
+            try:
+                address_id = int(input('Please enter an address id: '))
+            except ValueError as error:
+                print('ValueError:', error)
+            else:
+                break
+    Human.create(
+        first_name=first_name,
+        last_name=last_name,
+        number=number,
+        address=address_id
+    )
+
+
 # Connect to database useing database_manager
 database_manager = DatabaseManager(
     database_name=DATABASE['name'],
@@ -159,13 +199,26 @@ if __name__ == '__main__':
         # create_random_phone_book()
 
         MENU = '''
+0. Exit.
 1. Add new address.
 2. Add new person.
 3. Add new person to phonebook.
 4. Add existed person to phonebook.
 5. Change a persons info.
+6. Delete a person from phonebook.
 '''
-        print(MENU)
+        while True:
+            print(MENU)
+            while True:
+                order = int(input('Please enter your order: '))
+                if 0 <= order < 7:
+                    break
+                print('You enter wrong number! Please try again.')
+            match order:
+                case 0:
+                    break
+                case 2:
+                    add_new_person()
 
     except ValueError as error:
         print('ValueError:', error)
